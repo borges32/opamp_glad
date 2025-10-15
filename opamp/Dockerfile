@@ -1,15 +1,18 @@
 # opamp-server/Dockerfile
 FROM golang:1.23.2 AS builder
-WORKDIR /src
-RUN git clone https://github.com/open-telemetry/opamp-go.git
 
+# Copy the entire source code to the container
+WORKDIR /src/opamp-go
+COPY . .
 
-WORKDIR /src/opamp-go/internal/examples/server
-# Compila o example server (com UI)
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /tmp/opamp-server .
+# Change to the examples directory (where the correct go.mod is)
+WORKDIR /src/opamp-go/internal/examples
+
+# Build the example server (with UI)
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /tmp/opamp-server ./server
 
 FROM alpine:3.20
-# Copia binário e a pasta de UI exatamente como o example server espera
+# Copy binary and UI folder exactly as the example server expects
 WORKDIR /app
 COPY --from=builder /tmp/opamp-server /usr/local/bin/opamp-server
 COPY --from=builder /src/opamp-go/internal/examples/server/uisrv /app/uisrv
@@ -20,6 +23,3 @@ EXPOSE 4320 4321
 # Garanta que o processo rode no /app (onde está /app/uisrv/...)
 WORKDIR /app
 ENTRYPOINT ["/usr/local/bin/opamp-server"]
-# ...
-
-
