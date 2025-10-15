@@ -1,4 +1,4 @@
-# opamp-server/Dockerfile
+# opamp/Dockerfile
 FROM golang:1.23.2 AS builder
 
 # Copy the entire source code to the container

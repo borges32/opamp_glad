@@ -5,7 +5,7 @@ services:
 
   opamp-server:
     build:
-      context: ./opamp-server
+      context: ./opamp
     image: local/opamp-server:latest
     container_name: opamp-server
     entrypoint: ["/bin/sh","-c"]
